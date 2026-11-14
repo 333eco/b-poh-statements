@@ -36,6 +36,13 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-13 — `b-poh-statements.md` revised (version 1.1)
+
+§3.4 reserves `b-agreement/v1`, an agreement pressed once by each of two parties, stating what it will do so its date is
+fixed; its format will be defined when it is built. Nothing else in the specification changed. The version 1 proof was
+renamed to `b-poh-statements.md.r1.ots` and keeps the evidence of what version 1 said; the new file was stamped by hand at
+the push (SHA-256 `ac55370f79d60587036837115e3e1ccbe1e7991d5672be8bcb7787d42e30b151`).
+
 ### 2026-11-13 — `b-poh-statements.md` published (version 1, draft dated 2026-11-12)
 
 First public version, written from the services as they ran on 2026-11-12: the `b-mail/v1` and `b-name/v1` statements, the

@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1, 2026-11-12. It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.1, 2026-11-13 (version 1: 2026-11-12). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -112,6 +112,19 @@ whose fragment holds the statement and its proof (§8.1). Readers, and the agent
 and against the author's `@name` page (§9), and keep or hide posts in their own feeds by it, each by their own choice, with no
 shared score. The network changes nothing. A press shows that a person approved this exact post, not that they wrote it (§1).
 The format follows §3.1's shape (a salt where the post is not public) and will be defined when it is built.
+
+### 3.4 `b-agreement/v1`: an agreement between two parties (reserved; its format is not yet defined)
+
+What it will do, stated now so its date is fixed: two parties, each an `@name` or a business `#tag`, record what they both
+agreed. One exact text names both parties and what each gives the other, and each party presses it once with a passkey.
+That makes two ordinary records (§5) over the same statement. The text is the agreement and travels with the parties; the
+log holds only its fingerprint, and a salt keeps short agreements from being confirmed by guessing. Any change to the text is
+a different statement, so a changed text is a new offer and can never be accepted in place of the old one. Which press came
+first, and whether an offer was withdrawn before the other party pressed, is decided by the log's order, never by the
+recorded minute. A business is a party only through a person who presses for it, because only a person holds a passkey;
+an agent may draft an agreement but cannot press one. A checker reports that both passkeys pressed this exact text; it never
+says that the agreement is valid, binding or kept, and it never reports who held a passkey (§1). The format follows §3.1's
+shape and will be defined when it is built.
 
 ---
 
@@ -332,3 +345,4 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 ## 13. Changes
 
 - **v1 (draft), 2026-11-12:** first version, from the live services.
+- **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
