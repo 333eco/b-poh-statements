@@ -36,6 +36,15 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-14 (later) — `b-poh-statements.md` revised (version 1.3): corrections
+
+An adversarial review before the paper found two things wrong, and both are corrected in place with the old wording named in §13
+and in the text: §10 had said an agent "cannot press" (a software authenticator can, with nobody present), and §9.2 compared only
+a mail's plain-text part (readers are shown the HTML part, which is now compared too). §10 and §11 also now state the checker's
+limits and what the operator's servers see. The statement format is unchanged. The version 1.2 proof was renamed to
+`b-poh-statements.md.r3.ots` (⚠️ it was a few hours old; whether it had its Bitcoin attestation when retired is recorded in the
+commit message) and the new file was stamped by hand at the push (SHA-256 `e02eff95ff7b1e972f4705aa160de8982102409c65dc439c1d9e41fb31db05a3`).
+
 ### 2026-11-14 — `b-poh-statements.md` revised (version 1.2)
 
 Anyone can now sign a mail in the browser (§8.5), so a B-Mail also arrives from ordinary mail apps: §8.4 says how such a mail

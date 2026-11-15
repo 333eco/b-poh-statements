@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.2, 2026-11-14 (version 1: 2026-11-12; 1.1: 2026-11-13). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.3, 2026-11-14 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -122,7 +122,7 @@ log holds only its fingerprint, and a salt keeps short agreements from being con
 a different statement, so a changed text is a new offer and can never be accepted in place of the old one. Which press came
 first, and whether an offer was withdrawn before the other party pressed, is decided by the log's order, never by the
 recorded minute. A business is a party only through a person who presses for it, because only a person holds a passkey;
-an agent may draft an agreement but cannot press one. A checker reports that both passkeys pressed this exact text; it never
+an agent may draft an agreement; each press is a party's own passkey's (§10 says what that does and does not show). A checker reports that both passkeys pressed this exact text; it never
 says that the agreement is valid, binding or kept, and it never reports who held a passkey (§1). The format follows §3.1's
 shape and will be defined when it is built.
 
@@ -304,7 +304,13 @@ nothing to check it with*.
 - the body, before the signature block, equals the signed body **as words**: every run of whitespace counts as one space.
   A mail app re-wraps long lines, drops a line's trailing space and adds or removes blank lines, and none of that changes a
   word; a changed, added or removed word differs, and so does a space put inside a word. The signature block starts at the
-  last line that is only `--`, with or without its trailing space. A mail with no plain-text part is read from its HTML;
+  last line that is only `--`, with or without its trailing space;
+- ⛔ **every text part is compared, the HTML part too.** Mail apps show the HTML part, so a checker that compared only the
+  plain part would pass a press over innocent plain text beside different words in the HTML. The HTML part is read as text
+  (block ends and `<br>` as line ends, tags removed, entities decoded) and must say the signed words by the same rule; where it
+  has no `--` line, what follows the signed words may be only a signature line (§8.4). A checker given one part says which
+  part it compared. ⚠️ This reads the markup, not the rendering: text hidden or drawn by a style sheet is not seen as a reader
+  sees it;
 - the message's attachments, other than the carrier files, are exactly those listed, by SHA-256.
 
 Any difference: report *a B-Mail mark that doesn't match this message* and which part. ⛔ Never treat such a message as signed.
@@ -339,8 +345,23 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 ## 10. Security considerations
 
-- **What stops a script.** A signature needs a fresh press with user verification on the person's device. An agent can draft,
-  prepare and send, but cannot press.
+- **A press does not show that a person pressed.** A signature needs a fresh assertion with user verification, but user
+  verification is the authenticator's own report. A software authenticator reports it with nobody present (browsers ship one for
+  testing), this specification asks for no attestation, and a new account needs only a passkey. So a script can press, and a
+  holder can give a software passkey to an agent. ⛔ Never write that an agent cannot press, or that a press costs a human act.
+  *(Versions 1 to 1.2 said "an agent can draft, prepare and send, but cannot press." That was wrong.)*
+- **What a named statement adds instead is accountability.** The passkey that pressed is one a name's page lists (§7), the name
+  is held by someone who can lose it, and a reader keeps or mutes a name on their own list (§9.5). A statement with no name
+  shows only that some passkey pressed this exact text, which anyone can arrange.
+- **The checker is the page the mail links to.** A reader with nothing installed checks on whatever page the link opens, and a
+  forged mail can link to a look-alike that shows every line as passing. The check is only as good as the reader's attention to
+  the address (`explorer.333.eco`), or their use of a checker the mail did not choose: an address they typed, their own mail
+  client, their own agent.
+- **What the browser check does not do.** The check page shows the signed statement and what the log and the name's page say
+  about it. It does not see the mail: comparing the two (§9.2) is done by the reader's eyes there, or by a checker that holds
+  the mail.
+- **One press, many recipients.** One press covers one text to all the people it names, however many. Mail that reaches a
+  reader through a mailing list fails §9.2 exactly as a copied link does, since the reader is not a signed recipient.
 - **Copied signatures.** Binding the recipients makes a copied link fail for anyone it did not address. A recipient can still
   show their own copy to others; the check page shows the message as signed, so a reader compares.
 - **The operator.** The log's record key signs every record; checkpoints and witnesses make the log append-only and its history
@@ -356,7 +377,14 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 - Unrevealed records are unlinkable (§5). Showing a passkey on a name links only the records whose proofs are shared.
 - The salt (§3.1) keeps short messages from being confirmed by guessing.
-- No remote images, no tracking, no click log. A recipient's opening a message is never reported to anyone.
+- No remote images, no tracking, no click log, and nothing in the mail reports that it was opened. ⚠️ Checking is not
+  invisible to the operator: a named check asks the registry for the name's keys (§7.3), and a record's first hour is read from
+  the signing service's waiting list (§5), so the operator's servers see the checker's network address, the name and the time,
+  never the message. *(Versions up to 1.2 said a recipient's opening a message "is never reported to anyone", which is true of
+  the mail and was too wide for the check.)*
+- **Who must be trusted, today.** The log's operator, its record key, and the registry's live answer about a name's keys are one
+  party's. Outside timestamps (three authorities and Bitcoin) fix when each log state existed; outside witnesses are not yet
+  admitted. Until they are, "public and append-only" rests on that operator and those clocks.
 - A holder's devices and language are theirs: device names are private, and a language is shown only if they choose it.
 
 ## 12. Reference implementations
@@ -371,6 +399,12 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
+- **v1.3 (draft), 2026-11-14, later:** corrections after an adversarial review. §10 no longer says an agent cannot press: a
+  software authenticator can, so a press shows a passkey, never a person, and what a named statement adds is accountability to a
+  name. §9.2 compares every text part, the HTML part too (comparing only the plain part let different words pass in the HTML).
+  §10 and §11 now say that the checker is the page the mail links to, that the browser check does not see the mail, that one
+  press covers any number of recipients, what the operator's servers see when a statement is checked, and who must be trusted
+  today. The statement format is unchanged.
 - **v1.2 (draft), 2026-11-14:** anyone can sign a mail in the browser (§8.5: the salt made in the page, a link that fills the
   fields in, the result given to the person alone), so a B-Mail now also arrives from ordinary mail apps. For those: §8.4 says how
   such a mail carries its signature; §9.1 finds the check link in the mail's text too, and never in quoted text; §9.2 compares the
