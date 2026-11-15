@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.1, 2026-11-13 (version 1: 2026-11-12). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.2, 2026-11-14 (version 1: 2026-11-12; 1.1: 2026-11-13). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -261,9 +261,28 @@ For filters and agents. The header is a hint: a checker never trusts it alone (�
 
 ### 8.4 The signature line (informative)
 
+A mail written in an ordinary mail app (§8.5) carries the same facts as text: after the body, a line that is only `-- `, then the
+sender's name (and their `@name` page), then *Signed with HeartBank®* with the check link (§8.1), behind those words or as plain
+text. It carries no image and no header of ours.
+
 Sent mail shows the sender's name beside the B-Emblem, linking to the check (§8.1) and to their `@name` page, and the words
 *signed with HeartBank®* (and, by default, the same in Khmer), linking to the record. ⛔ No remote image, no tracking pixel, no
 click log: the emblem is attached inside the message.
+
+### 8.5 Signing in the browser (informative)
+
+Anyone can sign a mail at `https://sign.333.eco/b-mail`. The person writes the message there; the page builds the statement
+(§3.1), shows exactly what the press will sign, and sends the signing service only the statement's fingerprint (§4). After the
+press the page gives the signed message (§8.4) to the person alone, to send from their own mail app. Nothing is returned to any
+other page or address.
+
+- **The salt is made in the page.** A link may fill the fields in, shaped like `mailto:`
+  (`#to=…&cc=…&subject=…&body=…&from=…&fromname=…&name=…&made=…`, each value percent-encoded, read from the fragment once and
+  cleared), which is how an agent hands a person a draft. Whoever wrote the link does not know the salt, so they cannot compute
+  the statement's fingerprint or find its record. The page says a link filled it in, and every word can be changed before the press.
+- A whole statement may be handed over instead (`#bmail=<base64url of the statement>`); it is shown whole and cannot be edited
+  there. Its author knows its salt, and so can see that a record exists for it, never whose press made it.
+- This page signs no attachments: its statements have no `attachment:` line, so a mail sent with files does not match (§9.2).
 
 ---
 
@@ -273,7 +292,8 @@ A checker receives a message and decides what to say about it. It reports facts,
 
 ### 9.1 Find the statement
 
-From the check link in the HTML part (§8.1), else from the attachments (§8.2). With neither, report *a B-Mail mark with
+From the check link (§8.1), in the HTML part or in the mail's text, else from the attachments (§8.2). ⛔ A link inside quoted
+text (a `>` line, a `blockquote`) belongs to the mail being quoted, never to this one: a reply that quotes a B-Mail is not a B-Mail. With neither, report *a B-Mail mark with
 nothing to check it with*.
 
 ### 9.2 Compare the message with what was signed
@@ -281,7 +301,10 @@ nothing to check it with*.
 - the `from:` address equals the message's From address;
 - **the reader is among the signed recipients** (`to:` and `cc:`), by any of the reader's own addresses;
 - the `subject:` equals the message's Subject (whitespace collapsed);
-- the body, before the signature block (`\n\n-- \n`), equals the signed body;
+- the body, before the signature block, equals the signed body **as words**: every run of whitespace counts as one space.
+  A mail app re-wraps long lines, drops a line's trailing space and adds or removes blank lines, and none of that changes a
+  word; a changed, added or removed word differs, and so does a space put inside a word. The signature block starts at the
+  last line that is only `--`, with or without its trailing space. A mail with no plain-text part is read from its HTML;
 - the message's attachments, other than the carrier files, are exactly those listed, by SHA-256.
 
 Any difference: report *a B-Mail mark that doesn't match this message* and which part. ⛔ Never treat such a message as signed.
@@ -340,9 +363,15 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 - **The verifier:** `@333eco/origin-verify` (CC0): the record, log and opening checks (§5, §6).
 - **The check page:** `explorer.333.eco/b-mail` (§8.1, §9).
+- **The signing page:** `sign.333.eco/b-mail` (§8.5).
+- **A checker for agents:** the `check_statement` tool of the MCP server at `developers.333.eco/mcp` (§9).
 - **The registry's Look up API:** `333.eco/api/v1/names/{name}` (§7.3), described at developers.333.eco.
 
 ## 13. Changes
 
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
+- **v1.2 (draft), 2026-11-14:** anyone can sign a mail in the browser (§8.5: the salt made in the page, a link that fills the
+  fields in, the result given to the person alone), so a B-Mail now also arrives from ordinary mail apps. For those: §8.4 says how
+  such a mail carries its signature; §9.1 finds the check link in the mail's text too, and never in quoted text; §9.2 compares the
+  body as words. The statement format (§3.1) is unchanged, and a mail that matched under v1.1 still matches.

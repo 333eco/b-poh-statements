@@ -36,6 +36,13 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-14 — `b-poh-statements.md` revised (version 1.2)
+
+Anyone can now sign a mail in the browser (§8.5), so a B-Mail also arrives from ordinary mail apps: §8.4 says how such a mail
+carries its signature, §9.1 finds the check link in the mail's text and never in quoted text, and §9.2 compares the body as
+words. The statement format is unchanged. The version 1.1 proof was renamed to `b-poh-statements.md.r2.ots` and keeps the
+evidence of what version 1.1 said; the new file was stamped by hand at the push (SHA-256 `99f686f5e5e9e9bd7e2ccf9ca12facd773d883b509e1d3f7186e64fa9224b2e9`).
+
 ### 2026-11-13 — `b-poh-statements.md` revised (version 1.1)
 
 §3.4 reserves `b-agreement/v1`, an agreement pressed once by each of two parties, stating what it will do so its date is
