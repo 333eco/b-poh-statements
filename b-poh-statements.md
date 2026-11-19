@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.3, 2026-11-14 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.4, 2026-11-19 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -125,6 +125,16 @@ recorded minute. A business is a party only through a person who presses for it,
 an agent may draft an agreement; each press is a party's own passkey's (§10 says what that does and does not show). A checker reports that both passkeys pressed this exact text; it never
 says that the agreement is valid, binding or kept, and it never reports who held a passkey (§1). The format follows §3.1's
 shape and will be defined when it is built.
+
+### 3.5 `b-ticket/v1`: a seat at a film's premiere (reserved; its format is not yet defined)
+
+What it will do, stated now so its date is fixed: a person who held a seat at a film's premiere, bought or given to them,
+presses with their own passkey a statement that they held it, naming the film, the premiere and the seat. It is a keepsake:
+a record that stays the holder's own. The log holds only its fingerprint, the holder keeps the text, and a salt keeps it from
+being confirmed by guessing. It is not a token and carries no value: it cannot be sold, it is no share in anything the film
+earns, and nothing is paid through it. How the film's side vouches for the seat will be defined with the format. A checker
+reports that a passkey pressed this exact text; it never says that the holder attended, and it never reports who held the
+passkey (§1). The format follows §3.1's shape and will be defined when it is built.
 
 ---
 
@@ -399,6 +409,7 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
+- **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
 - **v1.3 (draft), 2026-11-14, later:** corrections after an adversarial review. §10 no longer says an agent cannot press: a
   software authenticator can, so a press shows a passkey, never a person, and what a named statement adds is accountability to a
   name. §9.2 compares every text part, the HTML part too (comparing only the plain part let different words pass in the HTML).

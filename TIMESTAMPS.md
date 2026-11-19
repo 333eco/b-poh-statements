@@ -36,6 +36,13 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-19 — `b-poh-statements.md` revised (version 1.4)
+
+§3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere, stating what it will do so its date is fixed; its
+format will be defined when it is built. Nothing else in the specification changed. The version 1.3 proof was renamed to
+`b-poh-statements.md.r4.ots` and keeps the evidence of what version 1.3 said; the new file was stamped by hand at the push
+(SHA-256 `8074185729912f11ee4fffd874e0ea6b6f98fbb24f180407de19c40eec85bade`).
+
 ### 2026-11-14 (later) — `b-poh-statements.md` revised (version 1.3): corrections
 
 An adversarial review before the paper found two things wrong, and both are corrected in place with the old wording named in §13
