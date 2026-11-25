@@ -36,6 +36,15 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-25 — `b-poh-statements.md` revised (version 1.5)
+
+Attached files and rewritten links, from the services as they now run: the signing page signs files by fingerprint (§8.5), the
+`attachment:` line's form and two reserved names (§3.1), one rule for files in every checker (§9.2), rewritten links unwrapped
+locally (§9.1), and the limit on *never sent to a server* for a link a security service rewrote (§8.1, §10). The statement format
+is unchanged. The version 1.4 proof was renamed to `b-poh-statements.md.r5.ots` and keeps the evidence of what version 1.4 said
+(it carried its Bitcoin attestation since the 2026-11-22 upgrade); the new file was stamped by hand at the push (SHA-256
+`cad0bb6603334c4954671b5caef184c94a51ca733a219b55c8056b47d58e7c16`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-19 — `b-poh-statements.md` revised (version 1.4)
 
 §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere, stating what it will do so its date is fixed; its

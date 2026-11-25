@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.4, 2026-11-19 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.5, 2026-11-25 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -91,6 +91,9 @@ attachment: <sha256 hex> <file name> (one line per attachment, in order)
 - `salt` is 16 random bytes. The log publishes each statement's fingerprint, and without a salt a short message ("I resign")
   could be confirmed by guessing. With it, only those who hold the text can check it.
 - `<body>` is the plain-text body, line endings converted to LF, trailing newlines removed, then one LF added.
+- Each `attachment:` line is the file's SHA-256 in lowercase hex, a space, and the file's name with every run of whitespace
+  collapsed to one space and trimmed, so a name can never add a line. The names `b-mail.txt` and `b-mail-proof.json`, in any
+  case, are reserved for the carrier (§8.2) and are never one of the message's own files.
 
 ### 3.2 `b-name/v1`: a passkey signs as a name
 
@@ -256,6 +259,11 @@ The statement and its proof travel in the URL **fragment**, which browsers never
 clears them from the address bar before any other script runs, and checks everything in the reader's browser (§9). When the link
 would be longer than 16,000 characters, the sender uses §8.2 instead.
 
+⚠️ **A mail security service may rewrite the link.** Measured 2026-11-25: one organization's Proofpoint URL Defense rewrote every
+link in a B-Mail, moving the `#` into its own path (`urldefense.com/v3/__https://explorer.333.eco/b-mail*m=…`). A click then sends
+the statement and proof to that service's server, which already holds the mail, and it redirected to the original link with the
+fragment intact. So *never sent to a server* holds only for a link nobody rewrote. A checker unwraps such links locally (§9.1).
+
 ### 8.2 Attachments (fallback)
 
 `B-Mail.txt` holds the statement's exact bytes (base64 transfer encoding, so no byte changes in transit), and
@@ -292,7 +300,11 @@ other page or address.
   the statement's fingerprint or find its record. The page says a link filled it in, and every word can be changed before the press.
 - A whole statement may be handed over instead (`#bmail=<base64url of the statement>`); it is shown whole and cannot be edited
   there. Its author knows its salt, and so can see that a record exists for it, never whose press made it.
-- This page signs no attachments: its statements have no `attachment:` line, so a mail sent with files does not match (§9.2).
+- **Files are signed by fingerprint and never uploaded.** The page reads each chosen file in the browser and adds its
+  `attachment:` line (§3.1); only the statement's fingerprint leaves the device. The person attaches the same files to the mail
+  (a `mailto:` link cannot). At most 20 MB of files in all (mail services count the encoded size, about a third larger), and a
+  file named `b-mail.txt` or `b-mail-proof.json`, in any case, is refused. *(Versions up to 1.4 said this page signs no
+  attachments.)*
 
 ---
 
@@ -306,12 +318,17 @@ From the check link (§8.1), in the HTML part or in the mail's text, else from t
 text (a `>` line, a `blockquote`) belongs to the mail being quoted, never to this one: a reply that quotes a B-Mail is not a B-Mail. With neither, report *a B-Mail mark with
 nothing to check it with*.
 
+**Rewritten links.** A mail security service may rewrite every link in both parts (§8.1). Before looking for the link and before
+comparing text (§9.2), a checker unwraps Proofpoint URL Defense (v1 to v3) and Microsoft Safe Links locally, ⛔ never asking the
+rewriter. What comes out must still be an `https://explorer.333.eco/b-mail#` link to count. What follows a wrapper is the mail's
+own text: a v3 wrapper ends at the first `$` after `__;`; after the others, a trailing run of `.,;:!?)]}` stays as it was.
+
 ### 9.2 Compare the message with what was signed
 
 - the `from:` address equals the message's From address;
 - **the reader is among the signed recipients** (`to:` and `cc:`), by any of the reader's own addresses;
 - the `subject:` equals the message's Subject (whitespace collapsed);
-- the body, before the signature block, equals the signed body **as words**: every run of whitespace counts as one space.
+- the body, before the signature block and with rewritten links unwrapped (§9.1), equals the signed body **as words**: every run of whitespace counts as one space.
   A mail app re-wraps long lines, drops a line's trailing space and adds or removes blank lines, and none of that changes a
   word; a changed, added or removed word differs, and so does a space put inside a word. The signature block starts at the
   last line that is only `--`, with or without its trailing space;
@@ -321,7 +338,10 @@ nothing to check it with*.
   has no `--` line, what follows the signed words may be only a signature line (§8.4). A checker given one part says which
   part it compared. ⚠️ This reads the markup, not the rendering: text hidden or drawn by a style sheet is not seen as a reader
   sees it;
-- the message's attachments, other than the carrier files, are exactly those listed, by SHA-256.
+- the message's files, leaving out any named `b-mail.txt` or `b-mail-proof.json` in any case (the carrier), are exactly the listed
+  fingerprints as a **multiset** (a fingerprint listed twice needs two files; two copies of a file listed once is one too many),
+  compared in lowercase. ⚠️ A service that rebuilds attachments (stripping active content from Office files or PDFs) changes the
+  bytes, and the file then differs; not yet measured.
 
 Any difference: report *a B-Mail mark that doesn't match this message* and which part. ⛔ Never treat such a message as signed.
 
@@ -369,7 +389,8 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
   client, their own agent.
 - **What the browser check does not do.** The check page shows the signed statement and what the log and the name's page say
   about it. It does not see the mail: comparing the two (§9.2) is done by the reader's eyes there, or by a checker that holds
-  the mail.
+  the mail. The reader may choose or drop the files they received, which the page compares in the browser by the rule of §9.2
+  and never uploads.
 - **One press, many recipients.** One press covers one text to all the people it names, however many. Mail that reaches a
   reader through a mailing list fails §9.2 exactly as a copied link does, since the reader is not a signed recipient.
 - **Copied signatures.** Binding the recipients makes a copied link fail for anyone it did not address. A recipient can still
@@ -379,7 +400,8 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **Synced and shared passkeys.** A passkey synced across devices, or shared, presses for whoever holds it. This is why the
   claim is "a passkey", not "a person".
 - **Fragments.** The check link keeps the text out of servers' logs, but it is in the reader's browser history and passes through
-  any link scanner the mail provider uses, which already holds the mail.
+  any link scanner the mail provider uses, which already holds the mail. A link that a security service rewrote carries the
+  fragment in its path, so a click sends the statement to that service (§8.1).
 - **Names.** A name binding is only as strong as the holder's account: the fresh log-in, the identity provider's confirmation and
   the advance notice are the guards.
 
@@ -410,6 +432,11 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
 - **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
+- **v1.5 (draft), 2026-11-25:** attached files and rewritten links, from the live services. §8.5: the signing page signs files by
+  fingerprint, never uploading them (20 MB in all; the carrier's names refused). §3.1: the `attachment:` line's form and the two
+  reserved names. §9.2: one rule for files in every checker (a multiset, in lowercase). §9.1: rewritten links are unwrapped
+  locally, measured the same day on a real Proofpoint-wrapped B-Mail. §8.1 and §10: a rewritten link sends the fragment to the
+  rewriter on a click. The statement format is unchanged.
 - **v1.3 (draft), 2026-11-14, later:** corrections after an adversarial review. §10 no longer says an agent cannot press: a
   software authenticator can, so a press shows a passkey, never a person, and what a named statement adds is accountability to a
   name. §9.2 compares every text part, the HTML part too (comparing only the plain part let different words pass in the HTML).
