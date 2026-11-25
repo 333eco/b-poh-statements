@@ -36,6 +36,13 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-25 — `b-poh-statements.md` revised (version 1.6)
+
+Version-3 records, the day the services began writing them: a record names its PRESS (`press`, in place of `poh`: §1, §5), and an
+opening's origin is held to that press (§6, step 3). Version-2 records are unchanged. The version 1.5 proof was renamed to
+`b-poh-statements.md.r6.ots` and keeps the evidence of what version 1.5 said; the new file was stamped by hand at the push (SHA-256
+`3a4b8c133d970fdeff4e27ea67c309d4df1684b73e62d53814c79ea48a64f567`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-25 — `b-poh-statements.md` revised (version 1.5)
 
 Attached files and rewritten links, from the services as they now run: the signing page signs files by fingerprint (§8.5), the

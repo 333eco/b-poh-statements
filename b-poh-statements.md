@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.5, 2026-11-25 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.6, 2026-11-25 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -41,7 +41,8 @@ A statement never proves:
 
 **A press in the loop, later a human in the loop.** Today a statement guarantees a press. The further layers of B-PoH
 (proximity, vouching and the others in the B-PoH paper) are what raise a press toward personhood. A statement records which
-layers it relied on: today, `poh: ["passkey"]` in every record (§5).
+layers it relied on: `poh: ["passkey"]` in a version-2 record; a version-3 record names its PRESS instead (`press`, §5): which kind
+of key pressed and how it was unlocked, never a claim about the person.
 
 ---
 
@@ -170,9 +171,22 @@ A record is one JSON object:
   "witnessedAt": "YYYY-MM-DDTHH:MMZ", "kid": <record key id>, "witnessSig": <b64u> }
 ```
 
+A **version-3** record (from the switch; until then every record is version 2) carries `"v": 3` and `press` in place of `poh`:
+
+```
+{ "t": "record", "v": 3, …, "press": { "key": "passkey" }, … }
+{ "t": "record", "v": 3, …, "press": { "key": "b-poh", "unlock": "biometric", "shown": "app" }, … }
+```
+
+- `press.key` is `passkey` (a passkey pressed on the signing page) or `b-poh` (a key held by the B-PoH app, in the phone's secure
+  chip, enrolled with the phone's attestation). For `b-poh`: `unlock` is `biometric`, `pin`, `face` or `touch` (how the key was
+  unlocked; Android reports only `biometric` or `pin`), and `shown` is `app` (the app showed the words) or `site` (the asking site's
+  page showed them, through the phone's passkey sheet). It says what pressed, never who. Version-2 records keep exactly their form;
+  a checker reads both.
 - `witnessedAt` is written **to the minute**, with no seconds. Checkers must compare it as a time, never as text (§9.3).
 - `witnessSig` is the log's record key's ECDSA P-256 / SHA-256 signature (raw `r || s`) over
-  `"b-origin/record/v2\0" || jcs(record without witnessSig)`. The key is published in the verifier's trust file.
+  `"b-origin/record/v<v>\0" || jcs(record without witnessSig)`, `<v>` the record's own version (2 or 3). The key is published in the
+  verifier's trust file.
 - `ownerTag = b64u(HMAC-SHA256(tagKey, "b-origin/tag/v1\0" || u64(index)))`, where `tagKey` belongs to the signer's account and is
   shared with no one. Two records by one person carry unrelated tags, so **records are unlinkable unless their signer reveals them.**
 - A **withdrawal** is its own entry (`t: "withdraw"`, `target: <index>`), also pressed and signed: its challenge is
@@ -202,7 +216,11 @@ lp(signature) || lp(credentialPublicKey)))`.
 
 1. Recompute `assertionCommitment` from the opening; it must equal the record's.
 2. Recompute the challenge from `nonce` and the record's claim; it must equal `claimCommitment`.
-3. `clientDataJSON` must have `type: "webauthn.get"`, origin `https://sign.333.eco` and challenge `claimCommitment`.
+3. `clientDataJSON` must have `type: "webauthn.get"`, challenge `claimCommitment`, and the origin the press allows: for a
+   version-3 record whose `press` is `key: "b-poh"` with `shown: "app"` (pressed in the app's own screen), one of the app origins
+   (`android:apk-key-hash:<…>`) the verifier's trust file lists; for every other record, `https://sign.333.eco` — including an app
+   key pressed through the phone's passkey sheet (`shown: "site"`), whose origin the browser writes. The press is inside the log's
+   signature, so neither can pose as the other.
 4. `authenticatorData` must start with `sha256("sign.333.eco")`, and its flags must show the user was present AND verified.
 5. The signature must verify under `credentialPublicKey` (COSE) over `authenticatorData || sha256(clientDataJSON)`.
 
@@ -432,6 +450,8 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
 - **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
+- **v1.6 (draft), 2026-11-25:** version-3 records: `press` in place of `poh` (§1, §5), and the opening's origin held to
+  the press (§6). Version-2 records are unchanged.
 - **v1.5 (draft), 2026-11-25:** attached files and rewritten links, from the live services. §8.5: the signing page signs files by
   fingerprint, never uploading them (20 MB in all; the carrier's names refused). §3.1: the `attachment:` line's form and the two
   reserved names. §9.2: one rule for files in every checker (a multiset, in lowercase). §9.1: rewritten links are unwrapped
