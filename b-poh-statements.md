@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.7, 2026-11-26 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.8, 2026-11-26 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25; 1.7: 2026-11-26). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -325,9 +325,10 @@ press the page gives the signed message (§8.4) to the person alone, to send fro
 other page or address.
 
 - **The salt is made in the page.** A link may fill the fields in, shaped like `mailto:`
-  (`#to=…&cc=…&subject=…&body=…&from=…&fromname=…&name=…&made=…`, each value percent-encoded, read from the fragment once and
+  (`#to=…&cc=…&subject=…&body=…&from=…&fromname=…&name=…&toname=…&made=…`, each value percent-encoded, read from the fragment once and
   cleared), which is how an agent hands a person a draft. Whoever wrote the link does not know the salt, so they cannot compute
   the statement's fingerprint or find its record. The page says a link filled it in, and every word can be changed before the press.
+- **A thank, offered after the press (informative).** The person may type the `@name` of someone they write to (*Their @name*; a link may fill it as `toname`). ⛔ It is never part of the statement. The page asks the registry's public Look up (§7.3) whether that name has a page; if it does, the signed result offers *Thank @them*, a link to that person's page at 333.eco carrying `?thank=b-mail`, never pre-selected. The thank is the registry's own, with its own press. When files were signed, the result also links to keeping or giving them at B-Origin; this page never uploads them.
 - A whole statement may be handed over instead (`#bmail=<base64url of the statement>`); it is shown whole and cannot be edited
   there. Its author knows its salt, and so can see that a record exists for it, never whose press made it.
 - **Files are signed by fingerprint and never uploaded.** The page reads each chosen file in the browser and adds its
@@ -439,6 +440,7 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 
 - Unrevealed records are unlinkable (§5). Showing a passkey on a name links only the records whose proofs are shared.
 - The salt (§3.1) keeps short messages from being confirmed by guessing.
+- A recipient's `@name` typed on the signing page (§8.5) goes to the registry's Look up, never to the signing service, and never into the statement. The check page's *Thank @x* link carries the signer's `@name` to the registry; the check page's own visit counter records that link with the name masked (`/@`).
 - No remote images, no tracking, no click log, and nothing in the mail reports that it was opened. ⚠️ Checking is not
   invisible to the operator: a named check asks the registry for the name's keys (§7.3), and a record's first hour is read from
   the signing service's waiting list (§5), so the operator's servers see the checker's network address, the name and the time,
@@ -462,6 +464,7 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
 - **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
+- **v1.8 (draft), 2026-11-26:** B-Mail thanks, from the live services (2026-11-25): §8.5 the optional recipient `@name` (`toname`), checked with Look up, never signed, and the *Thank @them* and keep-or-give links after the press; §11 where that name goes. The statement format is unchanged.
 - **v1.7 (draft), 2026-11-26:** §6.1 reserves key statements, signed by the signing service about a key held in a phone's secure
   chip, and revocations that carry two dates; nothing else changed.
 - **v1.6 (draft), 2026-11-25:** version-3 records: `press` in place of `poh` (§1, §5), and the opening's origin held to

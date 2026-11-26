@@ -36,6 +36,10 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-26 — `b-poh-statements.md` revised (version 1.8)
+
+B-Mail thanks, from the services as they run since 2026-11-25: §8.5 the optional recipient `@name` (`toname`), checked with the registry's Look up and never signed, and the links the result offers after the press; §11 where that name goes. The statement format is unchanged. The version 1.7 proof was renamed to `b-poh-statements.md.r8.ots` while still CALENDAR-ONLY (stamped 11:02, an upgrade at 12:42 found it not yet complete); `ots-upgrade.sh` finds every `*.ots`, archived ones included, so its Bitcoin attestation will still be added. The new file was stamped by hand at the push (SHA-256 `9e97dda6383bfe5a1088318b2bd92bcc8ec2563aa91ee860888eef0340960a7f`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-26 — `b-poh-statements.md` revised (version 1.7)
 
 §6.1 reserves key statements: signed by the signing service about a key held in a phone's secure chip, never pressed by a
