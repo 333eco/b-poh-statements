@@ -36,6 +36,13 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-26 — `b-poh-statements.md` revised (version 1.7)
+
+§6.1 reserves key statements: signed by the signing service about a key held in a phone's secure chip, never pressed by a
+person, and revocations that carry two dates. The format is not yet defined; nothing else changed. The version 1.6 proof was
+renamed to `b-poh-statements.md.r7.ots` and keeps the evidence of what version 1.6 said; the new file was stamped by hand at the
+push (SHA-256 `86c4b627e2906951abddd502b03d6f6494ed788ae0db8a8cf710aca7001c2775`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-25 — `b-poh-statements.md` revised (version 1.6)
 
 Version-3 records, the day the services began writing them: a record names its PRESS (`press`, in place of `poh`: §1, §5), and an

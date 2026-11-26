@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.6, 2026-11-25 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.7, 2026-11-26 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -228,6 +228,18 @@ The result is: **a passkey whose public key is `credentialPublicKey` made a user
 `{ "kind": "b-origin-proof", "version": 1, "index": <n>, "opening": <opening> }`. ⛔ A proof never carries the signer's `tagKey`,
 which would find every record they ever made.
 
+### 6.1 Key statements (reserved; the format is not yet defined)
+
+What it will do, stated now so its date is fixed: a press made with a key held in a phone's secure chip (`press.key: "b-poh"`,
+§5) carries a **key statement**, signed by the signing service and never pressed by a person (so it is not a statement in §2's
+sense). It says what the phone's own attestation showed about that key when it was enrolled: where the key lives, what can
+unlock it, and the boot state, kept apart from what the app only declares. It is about the key, never the person, and it
+travels only with a proof its holder shares. A **revocation**, written to the public log, carries two dates: from when the key
+may have pressed for someone else, and when that became known. So it reaches backward to the presses it affects and no
+further. Removing a key from an account is not a revocation and publishes nothing. A checker reports what the key statement
+shows as of the press's minute; it never says that a person pressed (§1). The format will be defined the day the signing
+service first issues one.
+
 ---
 
 ## 7. Binding a passkey to an @name
@@ -450,6 +462,8 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **v1 (draft), 2026-11-12:** first version, from the live services.
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
 - **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
+- **v1.7 (draft), 2026-11-26:** §6.1 reserves key statements, signed by the signing service about a key held in a phone's secure
+  chip, and revocations that carry two dates; nothing else changed.
 - **v1.6 (draft), 2026-11-25:** version-3 records: `press` in place of `poh` (§1, §5), and the opening's origin held to
   the press (§6). Version-2 records are unchanged.
 - **v1.5 (draft), 2026-11-25:** attached files and rewritten links, from the live services. §8.5: the signing page signs files by
