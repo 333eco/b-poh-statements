@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.9, 2026-11-27 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25; 1.7: 2026-11-26; 1.8: 2026-11-26). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.10, 2026-11-28 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25; 1.7: 2026-11-26; 1.8: 2026-11-26; 1.9: 2026-11-27). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -77,7 +77,7 @@ from: <From header>
 to: <To header>
 cc: <Cc header>                      (only when there is one)
 subject: <Subject header>
-name: @<name>                        (only when the sender signs as an @name, §7)
+name: @<name> or B:<address>         (only when the sender signs as an @name or a free address, §7)
 salt: <32 lowercase hex characters>
 attachment: <sha256 hex> <file name> (one line per attachment, in order)
 
@@ -410,9 +410,11 @@ Compute the statement's SHA-256. Find a record whose claim has it, in the log or
 ### 9.4 Check the name
 
 When the statement has a `name:` line and the proof's index is the record's: check the opening (§6), fetch the name's `keys`
-(§7.3), and find the passkey's public key there. Compare `witnessedAt` with `until` **as times** (a minute-precision signing and a
-millisecond removal sort wrongly as text). Report *signed with @name's passkey* only if the key is listed and the statement was
-signed before any `until`.
+(§7.3), and find the passkey's public key there. For a free address (`name: B:…`, since v1.10), first check that the answer's
+`"name"` is that same address: an address whose holder sends visitors to their `@name` answers the `@name`'s page, whose keys say
+nothing about the address, so the name is then not shown as checked. Compare `witnessedAt` with `until` **as times** (a minute-precision signing and a
+millisecond removal sort wrongly as text). Report *signed with @name's passkey* (or the address's) only if the key is listed and the statement
+was signed before any `until`.
 
 ### 9.5 Report
 
@@ -495,6 +497,9 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
   line names the address in the form every page shows and carries a salt, published only in that address's own Look up answer,
   because an unsalted line could be found by trying all 2^55 addresses against the log. The `@name` form is unchanged. The B-Mail
   statement (§3.1) still names only an `@name`.
+- **v1.10 (draft), 2026-11-28:** a B-Mail may be signed as a free address (§3.1: `name: B:<address>`, the form pages show); a
+  checker confirms that Look up answers that same address before trusting its keys (§9.4), since an address that sends visitors to
+  an `@name` answers the name's page. Nothing else changed.
 - **v1.7 (draft), 2026-11-26:** §6.1 reserves key statements, signed by the signing service about a key held in a phone's secure
   chip, and revocations that carry two dates; nothing else changed.
 - **v1.6 (draft), 2026-11-25:** version-3 records: `press` in place of `poh` (§1, §5), and the opening's origin held to

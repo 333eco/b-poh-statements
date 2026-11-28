@@ -36,6 +36,10 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-28 — `b-poh-statements.md` revised (version 1.10)
+
+A B-Mail may be signed as a free address (§3.1), and a checker first confirms Look up answers that same address (§9.4). The version 1.9 proof was renamed to `b-poh-statements.md.r10.ots`. The new file was stamped by hand at the push (SHA-256 `a562f71bed5d0d7ce205399631c3e83b99556d9b59bc64b75575f680109ada49`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-27 — `b-poh-statements.md` revised (version 1.9)
 
 A free address (`B:…`) may list passkeys as an `@name` does: §3.2 defines the address form of the `b-name/v1` line, which carries a salt so that no one can list addresses from the log's fingerprints; §7.1 and §7.3 say how the registry binds and publishes them. The `@name` form and the B-Mail statement are unchanged. The version 1.8 proof was renamed to `b-poh-statements.md.r9.ots`. The new file was stamped by hand at the push (SHA-256 `da61b1277e58dad1ea434277ad1d0114a20f62c88b4f8996eb42a341b433b0fe`). The RFC 3161 manifest rides the weekly run.
