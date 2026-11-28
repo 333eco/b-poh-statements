@@ -1,7 +1,7 @@
 # B-PoH Signed Statements, version 1
 
 **Authors:** Thon Ly · Miss Aquarius (an AI collaborator, disclosed by name)
-**Status:** draft, version 1.8, 2026-11-26 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25; 1.7: 2026-11-26). It describes the services as they run today, and it may change. Where it and the
+**Status:** draft, version 1.9, 2026-11-27 (version 1: 2026-11-12; 1.1: 2026-11-13; 1.2: 2026-11-14; 1.3: 2026-11-14; 1.4: 2026-11-19; 1.5: 2026-11-25; 1.6: 2026-11-25; 1.7: 2026-11-26; 1.8: 2026-11-26). It describes the services as they run today, and it may change. Where it and the
 running code disagree, the code is the fact and this document is wrong. Reference implementations are listed in §12.
 
 > **Read this first.** This text is dedicated to the public domain under
@@ -96,16 +96,32 @@ attachment: <sha256 hex> <file name> (one line per attachment, in order)
   collapsed to one space and trimmed, so a name can never add a line. The names `b-mail.txt` and `b-mail-proof.json`, in any
   case, are reserved for the carrier (§8.2) and are never one of the message's own files.
 
-### 3.2 `b-name/v1`: a passkey signs as a name
+### 3.2 `b-name/v1`: a passkey signs as a name or a free address
+
+For an `@name`:
 
 ```
 b-name/v1
 name: @<folded name>
 ```
 
-Exactly these two lines. `<folded name>` is the name as the registry keys it (lowercase, without punctuation), matching
-`[a-z0-9._-]{1,64}`. This statement is public on purpose: its proof is published so that anyone can learn which passkey signs
-as that name (§7). It carries no salt.
+For a free address (since v1.9):
+
+```
+b-name/v1
+name: B:<address>
+salt: <32 lowercase hex characters>
+```
+
+Exactly these lines. `<folded name>` is the name as the registry keys it (lowercase, without punctuation), matching
+`[a-z0-9._-]{1,64}`. `<address>` is the free address as every page shows it: twelve characters of Crockford's base32 in capitals
+(no I, L, O or U), the last a check character, in three groups of four joined by hyphens (`B:7K3M-9XD2-QH4N`). This statement is
+public on purpose: its proof is published so that anyone can learn which passkey signs as that name or address (§7).
+
+An `@name` statement carries no salt. **An address statement always carries one**, 16 random bytes made by the holder's own
+browser. The log publishes each record's fingerprint (§5), and an address has only 55 random bits, so without a salt anyone could
+try every address against the log and list every address that shows a passkey. The salt is published only in that address's own
+answers (§7.3), so a checker who already has the address can recompute the record, and nobody can list addresses.
 
 ### 3.3 `b-post/v1`: a post on a social network or the web (reserved; its format is not yet defined)
 
@@ -242,7 +258,7 @@ service first issues one.
 
 ---
 
-## 7. Binding a passkey to an @name
+## 7. Binding a passkey to an @name or a free address
 
 ### 7.1 What a holder does
 
@@ -255,6 +271,11 @@ On their registry page (`333.eco`), a holder chooses to show a passkey. The page
 3. the opening checks against the record (§6), which yields the passkey's public key;
 4. the identity provider confirms the passkey that pressed is one the holder logs in with (§7.2);
 5. the identity provider has told the holder about the change, by email or at their next log-in, before it is made.
+
+The holder of a free address does the same for their address (since v1.9). The registry checks the address form of the line with
+the salt the holder's page made (§3.2), and keeps the address's list apart from any `@name`'s. When the holder replaces their
+address, the keys it listed are dropped, as they are when a name is given up, because their records name the old address. A
+person may show the same passkey under both labels; then anyone who holds both can see that they belong to one person.
 
 ### 7.2 The identity provider's confirmation
 
@@ -271,6 +292,11 @@ account that pressed is the person behind that identifier; it never says who pre
 ```
 "keys": [ { "key": <credentialPublicKey, b64u>, "record": <n>, "since": <witnessedAt>, "until": <time or null> } ]
 ```
+
+`{name}` is an exact `@name`, or (since v1.9) an exact free address with its `B:` (`/api/v1/names/B:7K3M-9XD2-QH4N`). For an
+address, each entry also carries the `"salt"` of its record's line (§3.2), and the answer's `"name"` is the address. An address
+whose holder sends visitors to their `@name` answers that name's page instead; its `"name"` is then the `@name`, and a checker
+compares that field with the name the statement claims before it trusts a key.
 
 Removing a key sets `until`; the entry stays, so a statement signed while the key was shown still checks. Which device a key is
 on is kept privately for the holder and never published.
@@ -465,6 +491,10 @@ Readers may keep their own list of names whose messages they mute. ⛔ A list is
 - **v1.1 (draft), 2026-11-13:** §3.4 reserves `b-agreement/v1`, an agreement pressed by two parties; nothing else changed.
 - **v1.4 (draft), 2026-11-19:** §3.5 reserves `b-ticket/v1`, a seat holder's own record of a film's premiere; nothing else changed.
 - **v1.8 (draft), 2026-11-26:** B-Mail thanks, from the live services (2026-11-25): §8.5 the optional recipient `@name` (`toname`), checked with Look up, never signed, and the *Thank @them* and keep-or-give links after the press; §11 where that name goes. The statement format is unchanged.
+- **v1.9 (draft), 2026-11-27:** a free address (`B:…`) may list passkeys as an `@name` does (§3.2, §7.1, §7.3). Its `b-name/v1`
+  line names the address in the form every page shows and carries a salt, published only in that address's own Look up answer,
+  because an unsalted line could be found by trying all 2^55 addresses against the log. The `@name` form is unchanged. The B-Mail
+  statement (§3.1) still names only an `@name`.
 - **v1.7 (draft), 2026-11-26:** §6.1 reserves key statements, signed by the signing service about a key held in a phone's secure
   chip, and revocations that carry two dates; nothing else changed.
 - **v1.6 (draft), 2026-11-25:** version-3 records: `press` in place of `poh` (§1, §5), and the opening's origin held to

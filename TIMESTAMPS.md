@@ -36,6 +36,10 @@ be compared with any public block explorer.
 
 *Stamps, rotations and checks are recorded here, newest first.*
 
+### 2026-11-27 — `b-poh-statements.md` revised (version 1.9)
+
+A free address (`B:…`) may list passkeys as an `@name` does: §3.2 defines the address form of the `b-name/v1` line, which carries a salt so that no one can list addresses from the log's fingerprints; §7.1 and §7.3 say how the registry binds and publishes them. The `@name` form and the B-Mail statement are unchanged. The version 1.8 proof was renamed to `b-poh-statements.md.r9.ots`. The new file was stamped by hand at the push (SHA-256 `da61b1277e58dad1ea434277ad1d0114a20f62c88b4f8996eb42a341b433b0fe`). The RFC 3161 manifest rides the weekly run.
+
 ### 2026-11-26 — `b-poh-statements.md` revised (version 1.8)
 
 B-Mail thanks, from the services as they run since 2026-11-25: §8.5 the optional recipient `@name` (`toname`), checked with the registry's Look up and never signed, and the links the result offers after the press; §11 where that name goes. The statement format is unchanged. The version 1.7 proof was renamed to `b-poh-statements.md.r8.ots` while still CALENDAR-ONLY (stamped 11:02, an upgrade at 12:42 found it not yet complete); `ots-upgrade.sh` finds every `*.ots`, archived ones included, so its Bitcoin attestation will still be added. The new file was stamped by hand at the push (SHA-256 `9e97dda6383bfe5a1088318b2bd92bcc8ec2563aa91ee860888eef0340960a7f`). The RFC 3161 manifest rides the weekly run.
